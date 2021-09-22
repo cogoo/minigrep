@@ -1,9 +1,10 @@
-use std::{cmp::PartialEq, error::Error, fs};
+use std::{cmp::PartialEq, error::Error, fs, env};
 
 #[derive(Debug, PartialEq)]
 pub struct Config {
     pub query: String,
     pub filename: String,
+    pub is_case_sensitive: bool,
 }
 
 impl Config {
@@ -14,15 +15,22 @@ impl Config {
 
         let query = args[1].clone();
         let filename = args[2].clone();
+        let is_case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
-        Ok(Config { query, filename })
+        Ok(Config { query, filename, is_case_sensitive })
     }
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.filename)?;
 
-    for line in search(&config.query, &contents) {
+    let results = if config.is_case_sensitive {
+        search(&config.query, &contents)
+    } else {
+        search_case_insensitive(&config.query, &contents)
+    };
+
+    for line in results {
         println!("{}", line);
     }
 
