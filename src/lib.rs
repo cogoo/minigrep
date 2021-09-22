@@ -1,5 +1,6 @@
-use std::{error::Error, fs};
+use std::{cmp::PartialEq, error::Error, fs};
 
+#[derive(Debug, PartialEq)]
 pub struct Config {
     pub query: String,
     pub filename: String,
@@ -43,6 +44,31 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn create_config_instance() {
+        let args = vec![
+            String::from("some/path"),
+            String::from("foo"),
+            String::from("bar"),
+        ];
+
+        assert_eq!(
+            Config {
+                query: String::from("foo"),
+                filename: String::from("bar"),
+            },
+            Config::new(&args).unwrap()
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn panic_on_too_few_args() {
+        let args = vec![String::from("some/path")];
+
+        Config::new(&args).unwrap();
+    }
 
     #[test]
     fn one_result() {
