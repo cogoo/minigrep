@@ -1,4 +1,4 @@
-use std::{cmp::PartialEq, error::Error, fs, env};
+use std::{cmp::PartialEq, env, error::Error, fs};
 
 #[derive(Debug, PartialEq)]
 pub struct Config {
@@ -17,7 +17,11 @@ impl Config {
         let filename = args[2].clone();
         let is_case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
-        Ok(Config { query, filename, is_case_sensitive })
+        Ok(Config {
+            query,
+            filename,
+            is_case_sensitive,
+        })
     }
 }
 
@@ -78,6 +82,7 @@ mod tests {
             Config {
                 query: String::from("foo"),
                 filename: String::from("bar"),
+                is_case_sensitive: true,
             },
             Config::new(&args).unwrap()
         );
